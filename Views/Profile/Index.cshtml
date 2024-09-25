@@ -1,0 +1,121 @@
+@model BartmartWeb.Models.User
+@{
+    ViewData["Title"] = "Profile Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div id="modalBackground" class="container-new-listing">
+        <div class="container-content">
+            <h2 class="text-center mb-4">My Profile</h2>
+            <div class="container">
+                <div id="profile-pic" class="profile-pic"></div>
+
+                <div id="profile-header" class="profile-header d-flex align-items-center mb-4" style="margin-left: 20%;">
+                    <!-- Profile details will be loaded here -->
+                </div>
+                <div class="form-actions">
+                    <a href="/Profile/ManageAccount" class="btn-register">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+        import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+
+       const firebaseConfig = {
+  apiKey: "AIzaSyB5hjms7ZPmTL4jEuG1P6BIOi6zfSpslgQ",
+  authDomain: "bartmartdb-4d9a9.firebaseapp.com",
+  databaseURL: "https://bartmartdb-4d9a9-default-rtdb.firebaseio.com",
+  projectId: "bartmartdb-4d9a9",
+  storageBucket: "bartmartdb-4d9a9.appspot.com",
+  messagingSenderId: "242866251858",
+  appId: "1:242866251858:web:00f525da3828eae2fd578b",
+  measurementId: "G-90SSEGT956"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        var currentUserId = null;
+       
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                loadUserProfile(currentUserId);
+                
+            } else {
+                window.location.href = '/Home/Login';
+            }
+        });
+
+
+        function loadUserProfile(userId) {
+            const userRef = ref(database, `users/${userId}`);
+            get(userRef).then(snapshot => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                               const profilePic = userData.profilePic || '/images/default-profile.jpg'; // Set default image if none exists
+
+                           document.getElementById('profile-pic').innerHTML=`<img src="${profilePic}" class="profile-picture" alt="Profile Picture" style="width: 150px;height: 150px;border-radius: 50%;border-style: groove;">`;
+
+                    document.getElementById('profile-header').innerHTML = `
+
+
+<div class="col-info">
+                        @* <div class="col-info" style="margin-top: 60px;"> *@
+                            <p><b>Username: <i></b></p>
+                            <p>${userData.username}</i><p>
+                             <p><b>Name: </b> </p>
+                             <p><i>${userData.firstname} ${userData.lastname}</i></p>
+                            <p><b>Email:</b></p>
+                            <p><i> ${userData.email}</i></p>
+                            <p><b>Phone: </b></p>
+                            <p><i>${userData.phonenumber}</i></p>
+@* </div> *@
+                            @* <div class="col-info" style="padding-left:10%;"> *@
+                           @* <div class="col-info"> *@
+                            <p><b>Address: </b></p>
+                            <p><i>${userData.address}</i><p>
+                                <p><b>Postal Code: </b></p>
+                                <p><i>${userData.postalcode}</i></p>
+                                <p><b>City: </b></p>
+                                <p><i>${userData.city}</i></p>
+                                
+
+                        </div>
+                    `;
+                }
+            });
+        }
+
+
+
+
+
+  async function getUserDetails(userId) {
+       const userRef = ref(database, `users/${userId}`);
+       const userSnapshot = await get(userRef);
+       return userSnapshot.exists() ? userSnapshot.val() : {};
+   }
+
+
+
+
+
+    </script>
+</html>

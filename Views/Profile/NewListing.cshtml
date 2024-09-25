@@ -1,0 +1,231 @@
+﻿@{
+    ViewData["Title"] = "Create New Listing";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- style for the Fontend -->
+    <script type="module">
+            //import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
+            //import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
+
+            //fixing the listing ID in the firebase
+            import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
+            import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js';
+            import { getDatabase, ref, set, push } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
+            import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-storage.js';
+
+            //fixing the listing ID in the firebase
+            const app = initializeApp(firebaseConfig);
+            const database = getDatabase(app);
+            const auth = getAuth(app);
+            const storage = getStorage(app);
+
+            // Check if user is logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("listingForm").addEventListener("submit", function (event) {
+                    event.preventDefault(); // Prevent default submission
+
+                    const postalCode = document.getElementById("listingLocation").value;
+                    const postalCodeError = document.getElementById("postalCodeError");
+
+                    // Regular expression for Canadian postal code format (e.g., A1A 1A1)
+                    const postalCodePattern = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
+
+                    // Postal code validation
+                    if (!postalCodePattern.test(postalCode)) {
+                        postalCodeError.style.display = "block";  // Show error message
+                        return;  // Stop the function if the postal code is invalid
+                    } else {
+                        postalCodeError.style.display = "none";  // Hide error message if valid
+                    }
+
+                    // Proceed with image upload if postal code is valid
+                    const file = document.getElementById("uploadImage").files[0];
+                    if (!file) {
+                        alert("Please upload an image.");
+                        return;
+                    }
+
+                    const imageRef = storageRef(storage, `images/${file.name}`);
+                    uploadBytes(imageRef, file).then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    }).then((downloadURL) => {
+                        // Gather form data
+                        const listingData = {
+                            image: downloadURL,
+                            title: document.getElementById("listingTitle").value,
+                            description: document.getElementById("listingDescription").value,
+                            price: document.getElementById("listingPrice").value,
+                            cryptovalue: document.getElementById("listingCryptoValue").value,
+                            category: document.getElementById("listingCategory").value, // Ensure category is selected
+                            condition: document.getElementById("listingCondition").value, // Ensure condition is selected
+                            isexchangable: document.querySelector('input[name="exchangeOption"]:checked').value,
+                            status: document.getElementById("listingStatus").value, // Ensure status is selected
+                            location: postalCode,  // Use validated postal code
+                            userId: user.uid,
+                            timestamp: new Date().toISOString()
+                        };
+
+                        // Push listing to Firebase
+                        const newListingRef = push(ref(database, 'listings'));
+                        return set(newListingRef, listingData);
+                    }).then(() => {
+                        alert("Listing created successfully!");
+                        window.location.href = "/Home/BrowsePage";
+                    }).catch((error) => {
+                        console.error("Error saving listing: ", error);
+                        alert("Error: " + error.message);
+                    });
+                });
+            } else {
+                alert("You must be logged in to create a listing.");
+            }
+        });
+
+
+
+
+
+            // Image Functionality
+            document.getElementById("uploadImage").addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById("imagePreview").src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+    </script>
+</head>
+<body>
+    <div id="modalBackground" class="container-new-listing">
+        <div class="container-content">
+            <h2 class="text-center mb-4">Create New Listing</h2>
+            <form id="listingForm">
+                <div class="form-container">
+                    <!-- Image Section -->
+                    <div class="image-section">
+                        <label for="uploadImage" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="uploadImage" accept="image/*" required>
+                        <img id="imagePreview" class="image-preview" src="https://via.placeholder.com/300" alt="Image Preview">
+                        <!-- Condition -->
+                        <div class="form-group">
+                            <label for="listingCondition" class="form-label">Condition</label>
+                            <select class="form-select" id="listingCondition" required>
+                                <option selected disabled>Select Condition</option>
+                                <option>New</option>
+                                <option>Used like new</option>
+                                <option>Used</option>
+                            </select>
+                        </div>
+                        <!-- Category -->
+                        <div class="form-group">
+                            <label for="listingCategory" class="form-label">Category</label>
+                            <select class="form-select" id="listingCategory" required>
+                                <option selected disabled>Select Category</option>
+                                <option>Electronics</option>
+                                <option>Fashion</option>
+                                <option>Home & Garden</option>
+                                <option>Health & Beauty</option>
+                                <option>Sports & Outdoors</option>
+                                <option>Toys & Games</option>
+                                <option>Automotive</option>
+                                <option>Books, Movies & Music</option>
+                                <option>Real Estate</option>
+                                <option>Services</option>
+                                <option>Pets</option>
+                                <option>Collectibles & Antiques</option>
+                                <!-- More options -->
+                            </select>
+                        </div>
+                        <!-- Status -->
+                        <div class="form-group">
+                            <label for="listingStatus" class="form-label">Listing Status</label>
+                            <select class="form-select" id="listingStatus" required>
+                                <option selected disabled>Select Status</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                                <option>On Hold</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Form Section -->
+                    <div class="form-section">
+                        <!-- Title -->
+                        <div class="form-group">
+                            <label for="listingTitle" class="form-label">What are you selling?</label>
+                            <input type="text" class="form-control" id="listingTitle" placeholder="Title" required>
+                        </div>
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label for="listingDescription" class="form-label">Please describe the listing</label>
+                            <textarea class="form-control" id="listingDescription" rows="5" placeholder="Enter description" required></textarea>
+                        </div>
+                        <!-- Price -->
+                        <div class="form-group">
+                            <label for="listingPrice" class="form-label">Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="listingPrice" placeholder="Price in USD" step="0.01" required>
+                            </div>
+                        </div>
+                        <!-- Crypto Value -->
+                        <div class="form-group">
+                            <label for="listingCryptoValue" class="form-label">Crypto Value (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₿</span>
+                                <input type="number" class="form-control" id="listingCryptoValue" placeholder="Crypto Value" step="0.01">
+                            </div>
+                        </div>
+                        <!-- Exchange Option -->
+                        <div class="form-group">
+                            <label class="form-label">Do you accept exchanges?</label><br>
+                            <input type="radio" id="exchangeYes" name="exchangeOption" value="Yes" required>
+                            <label for="exchangeYes">Yes</label>
+                            <input type="radio" id="exchangeNo" name="exchangeOption" value="No" required>
+                            <label for="exchangeNo">No</label>
+                        </div>
+                        <!-- Location -->
+                        <div class="form-group">
+                            <label for="listingLocation" class="form-label">Where is the pickup location?</label>
+                            <input type="text" class="form-control full-width" id="listingLocation" placeholder="Enter location" required>
+                            <small id="postalCodeError" style="color: red; display: none;">Invalid postal code format. Example: A1A 1A1</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-register">Submit Listing</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    document.getElementById("listingForm").addEventListener("submit", function (event) {
+        const postalCode = document.getElementById("listingLocation").value;
+        const postalCodeError = document.getElementById("postalCodeError");
+
+        // Regular expression for Canadian postal code format (e.g., A1A 1A1)
+        const postalCodePattern = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
+
+        if (!postalCodePattern.test(postalCode)) {
+            event.preventDefault();  // Prevent form submission if postal code is invalid
+            postalCodeError.style.display = "block";  // Show error message
+        } else {
+            postalCodeError.style.display = "none";  // Hide error message if valid
+        }
+    });
+</script>

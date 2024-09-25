@@ -1,0 +1,157 @@
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
+    import { getDatabase, ref as dbRef, set, push, onValue, update, remove, query, orderByChild } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js';
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    const toplistings = document.getElementById("toplisthomepage");
+    const listingRootRef = dbRef(database, 'listings/');
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('Auth').style.display = 'none';
+            console.log("user:", user);
+        } else {
+            document.getElementById('Auth').style.display='block';
+           
+            console.log("user:", user);
+
+
+        }
+    });
+
+    function loadTopListings() {
+        onValue(listingRootRef, (snapshot) => {
+
+            const listings = snapshot.val();
+
+            if (listings) {
+
+                var cell = "";
+                const listingsArray = Object.keys(listings);
+
+                const listingsLength = listingsArray.length;
+                const maxLength = 50;
+
+                const trimArry = listingsLength <= 4 ? listingsArray : listingsArray.slice(0,4);
+
+               trimArry.forEach(key => {
+                    const list = listings[key];
+                    const trimDes = list.description.length > maxLength ? list.description.substring(0, maxLength)+" ... " : list.description;
+
+                    cell = cell + `<div class="col-3"><a href="/Home/ListingDetails?id=${key}" style="text-decoration: none; color: black;"><img src="${list.image}" height="150"><p><b>${list.title}</b></p><p>${trimDes}</p><p>$${list.price}&nbsp;</p></a></div>`
+                });
+
+                toplistings.innerHTML = cell;
+
+            } else {
+
+                alert("No listing found yet!");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadTopListings();
+    });
+
+</script>
+
+
+<br>
+<div class="row text-center">
+    <div class="col align-self-center">
+        <h2> Welcome to BartMart, where every trade finds its value</h2>
+        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+            industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+            scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
+            electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of
+            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like
+            Aldus PageMaker including versions of Lorem Ipsum.</p>
+        <p id="Auth"><button type="button" class="btn btn-outline-warning btn-rounded" data-mdb-ripple-init
+                data-mdb-ripple-color="dark">REGISTER</button>&nbsp;&nbsp;<button type="button"
+                class="btn btn-outline-success btn-rounded" data-mdb-ripple-init
+                data-mdb-ripple-color="dark">LOGIN</button></p>
+    </div>
+    <div class="col align-self-center">
+        <img src="https://media.gettyimages.com/id/537468878/vector/human-faces-on-a-world-map-network-social-media-concept.jpg?s=1024x1024&w=gi&k=20&c=kwYbp7Ynt_V3EdiMQBqLaIl49KiEK0tJEVYBzC9WBMI=" height="300" width="500">
+    </div>
+</div>
+    <div class="container my-5">
+        <div class="row text-center">
+
+            <div class="col-sm-4">
+                <h3>Buy and Sell</h3>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+            industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+            scrambled it to make a type specimen book.</p>
+            </div>
+
+            <div class="col-sm-4">
+                <h3>Use your Location</h3>
+                <p>T It has survived not only five centuries, but also the leap into
+            electronic typesetting, remaining essentially unchanged.</p>
+            </div>
+            <div class="col-sm-4">
+                <h3>Use Cryptocurrency</h3>
+                <p>It was popularised in the 1960s with the release of
+            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like
+            Aldus PageMaker including versions of Lorem Ipsum.</p>
+            </div>
+
+        </div>
+    </div>
+<hr>
+    <div class="container my-5">
+        <div class="row text-center">
+
+        <div class="col-sm-4">
+            <h3>Great Trades</h3>
+            <img src="https://www.geographicus.com/mm5/graphics/00000001/L/WhittlerforWorld-gillam-1899.jpg" height="200">
+        </div>
+
+        <div class="col-sm-4">
+            <h3>Near me</h3>
+            <img src="https://ziplocal.com/wp-content/uploads/2024/05/Onboarding-Local-SEO-Hero.png" height="200">
+            @* <p style="font-size:6vw;color:red;"><i class="fa-solid fa-location-dot"></i><p> *@
+        </div>
+        <div class="col-sm-4">
+            <h3>Categories</h3>
+            <img src="https://images.all-free-download.com/images/graphiclarge/garbage_classification_icons_dustbin_wastes_sketch_6848513.jpg" height="200" >
+        </div>
+
+        </div>
+    </div>
+
+<hr>
+    <div class="container my-5">
+        <div class="row text-center" id="toplisthomepage">
+            <!-- This is where the listings will be displayed -->
+        </div>
+    </div>
+
+<div>
+    <img src="https://reallygooddesigns.com/wp-content/uploads/2022/01/Cartoon-Landscape-Nature-3.png" width="100%" height="300">
+</div>
+<hr>
+<div style="text-align: center;">
+   <div style="width: 50%;margin:auto;">
+    <h2>Get In Touch</h2>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+            industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+            scrambled it to make a type specimen book. </p>
+    <p><button type="button" class="btn btn-primary">Contact Us</button></p>
+    </div>
+</div>
+<hr>
+<div class="container">
+  <div class="row">
+    <div class="col"><h4>Our Rating</h4><p>&#9733; &#9733; &#9733;  &#9733; &#9734;</p><p>Based on 2303 reviews</p></div>
+    <div class="col"><p>&#9733; &#9733; &#9733;  &#9733; &#9733;</p><p>Geat value and quality</p><p>standard dummy text ever since the 1500s, when an unknown printer</p></div>
+    <div class="col"><p>&#9733; &#9733; &#9733;  &#9733; &#9734;</p><p>Beautiful design!</p><p>standard dummy text ever since the 1500s, when an unknown printer</p></div>
+    <div class="col"><p>&#9733; &#9733; &#9733;  &#9733; &#9734;</p><p>Exactly what I wanted</p><p>standard dummy text ever since the 1500s, when an unknown printer</p></div>
+  </div>
+</div>

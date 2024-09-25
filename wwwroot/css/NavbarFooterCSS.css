@@ -1,0 +1,571 @@
+﻿
+/* Color Variables */
+:root {
+    --pakistan-green: #293F09ff;
+    --hover-green: #7C8868ff;
+    --tangerine: #ED8429ff;
+    --white: #FEFEFEff;
+    --alabaster: #EFF1E9ff;
+    --border-green: #374A15ff;
+    --dark-green: #203700;
+}
+
+
+/* General Navbar Styling */
+.navbar {
+    background-color: var(--white);
+    padding: 10px 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+/* Navbar Links */
+.nav-link {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    color: var(--pakistan-green);
+}
+
+/* Container Fluid Styling */
+.container-fluid {
+    max-width: 80%; /* adjsuted to avoid overflow and scrolling */
+    margin: 0 auto;
+}
+
+/* Logo Section */
+.navbar .navbar-brand {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: var(--pakistan-green);
+}
+
+/* Search Engine Section */
+.search-container {
+    display: flex; /* Enable flexbox */
+    flex-grow: 1; /* Allow the search container to grow */
+    flex-basis: 300px; /* Set an initial size (you can adjust this value) */
+    max-width: 600px; /* Optional: Set a max width for the search container */
+    margin: 0 auto; /* Center the search container */
+}
+
+    /* Form Styling */
+    .search-container form {
+        display: flex; /* Ensure the form is also a flex container */
+        width: 100%; /* Take full width of the container */
+    }
+
+    /* Input Styling */
+    .navbar .form-control {
+        height: 50px; /* Height of the search box */
+        flex: 1; /* Allow input to grow and fill available space */
+        font-size: 20px; /* Font size for input */
+        border-radius: 15px;
+        margin-right: 10px; /* Space between input and button */
+    }
+
+.navbar .btn-outline-success {
+    height: 50px; 
+    border: none;
+}
+
+
+
+/* Navbar First Row User Sign In */
+.navbar .fas {
+    font-size: 2rem;
+    color: var(--pakistan-green);
+}
+
+.navbar #userDetails {
+    display: flex;
+    align-items: center;    
+    justify-content: space-between;
+}
+
+#username {
+    font-weight: bold;
+    color: var(--pakistan-green);
+    margin-right: 20px;
+}
+
+/* User Picture */
+#userPicture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+/* Hover effect for logout icon */
+#logoutIcon:hover {
+    color: var(--tangerine);
+}
+
+/* Spacing adjustments */
+.container-fluid {
+    padding: 0 0px; /* Add some padding to the navbar */
+}
+
+/* Login Button */
+.btn-login {
+    text-decoration: none;
+    font-size: 1rem; 
+    font-weight: bold; 
+    background-color: var(--white);
+    color: var(--pakistan-green);
+    border: 0.7px solid var(--pakistan-green);
+    border-radius: 15px;
+    padding: 8px 80px;
+    transition: background-color 0.3s, color 0.3s;
+}
+/* .btn-register {
+    text-decoration: none;
+    font-size: 1rem; 
+    font-weight: bold; 
+    background-color: var(--white);
+    color: var(--pakistan-green);
+    border: 0.7px solid var(--pakistan-green);
+    border-radius: 15px;
+    padding: 8px 80px;
+    transition: background-color 0.3s, color 0.3s;
+} */
+.btn-register:hover {
+    background-color: var(--tangerine);
+    color: var(--white);
+}
+
+    .btn-login:hover {
+        background-color: var(--tangerine);
+        color: var(--white);
+    }
+
+    .btn-login i {
+        margin-right: 7px;
+    }
+
+
+/* Register Button */
+.btn-register {
+    text-decoration: none; 
+    font-size: 1rem; 
+    font-weight: bold; 
+    background-color: var(--pakistan-green);
+    color: var(--white);
+    border-radius: 15px;
+    margin-left: 5px;
+    transition: background-color 0.5s;
+    padding: 8px 80px;
+}
+
+    .btn-register:hover {
+        background-color: var(--hover-green);
+    }
+
+/* Guest Second Row */
+.second-row {
+    min-height: 70px;    
+    background-color: var(--alabaster);    
+    margin-top: 75px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.second-row a {
+        color: var(--pakistan-green);
+        border: none; 
+        font-size: 16px;
+        transition: background-color 0.3s, color 0.3s;
+        width: 250px;
+        display: inline-block; 
+        text-align: center; 
+        padding: 10px; 
+    }
+
+
+
+.second-row a:hover {
+    background-color: #7C8868; /* Change this to the desired hover color */
+    color: white; /* Change text color on hover */
+}
+
+/*    .btn-second-row {
+        color: var(--pakistan-green);
+        border: none; 
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 15px;
+        transition: background-color 0.3s, color 0.3s;
+        width: 250px; 
+        display: inline-block; 
+        text-align: center; 
+        padding: 10px; 
+    }*/
+
+    .btn-second-row:hover {
+        background-color: #7C8868; /* Change this to the desired hover color */
+        color: white; /* Change text color on hover */
+    }
+
+
+
+/* logged-in-row styles */
+.logged-in-row {
+    display: flex;
+    align-items: stretch; /* Ensures child elements (buttons) stretch to fill height */
+    justify-content: space-between; /* Distributes buttons with space between */
+    flex-wrap: wrap; /* Allows wrapping of buttons if there isn't enough horizontal space */
+    background-color: var(--pakistan-green);
+    margin-top: 80px;
+    width: 100%; /* Ensures parent div takes full width of the container */
+    height: 60px;
+}
+
+/* Style for all buttons */
+.logged-in-btn {
+    flex-grow: 1;
+    background-color: var(--pakistan-green);
+    color: var(--white);
+    padding: 10px;
+    border: none;
+    border-radius: 15px;
+    display: flex; /* Use flexbox for centering text */
+    justify-content: center; /* Center text horizontally */
+    align-items: center; /* Center text vertically */
+    height: 100%;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 5px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+    .logged-in-btn:hover {
+        background-color: var(--hover-green);
+        color: var(--white); /* Ensure text remains white on hover */
+    }
+
+/* myListingBtn button */
+#myListingBtn {
+    color: var(--white); /* Set default text color to white */
+    text-decoration: none; /* Remove the underline */
+    background-color: var(--pakistan-green); 
+    padding: 10px;
+    border-radius: 15px;
+    display: block;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+    /* On hover, keep the text white and change background if needed */
+    #myListingBtn:hover {
+        color: var(--white); /* Ensure text remains white on hover */
+        background-color: var(--hover-green); 
+    }
+
+
+/* Dropdown specific styles */
+.dropdown {
+    position: relative; /* To position the submenu inside the button area */
+}
+
+/* Submenu hidden by default */
+.sub-menu {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%; /* Position below the button */
+    left: 0;
+    background-color: var(--white);
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    z-index: 1;
+}
+
+/* Show submenu on hover */
+.dropdown:hover .sub-menu {
+    display: block; /* Display submenu on hover */
+}
+
+/* Submenu items */
+.sub-menu-item {
+    display: block;
+    padding: 10px;
+    background-color: var(--pakistan-green);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+    .sub-menu-item:hover {
+        background-color: var(--hover-green);
+        color: var(--white);
+    }
+
+
+
+/* Footer Styles */
+#mainfooter {
+    background-color: var(--alabaster); /* Footer background matching the palette */
+    color: var(--pakistan-green); /* Use the Pakistan green for text */
+    padding: 40px 0; /* Padding for top and bottom spacing */
+    font-size: 1rem;
+    border-top: 2px solid var(--border-green); /* Subtle top border */
+}
+
+/* Container within footer */
+#footercontainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px; /* Spacing within the footer container */
+}
+
+/* Footer headings */
+#mainfooter h5 {
+    color: var(--pakistan-green); /* Set headings to Pakistan green */
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 15px; /* Space under the headings */
+}
+
+/* Footer button */
+#footerbtn {
+    background-color: var(--pakistan-green); /* Button matching Pakistan green */
+    color: var(--white);
+    border-radius: 10px;
+    padding: 8px 20px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+    #footerbtn:hover {
+        background-color: var(--hover-green); /* Hover effect matching the site palette */
+    }
+
+/* Unstyled list for footer links */
+#mainfooter ul {
+    list-style: none;
+    padding: 0;
+}
+
+    #mainfooter ul li {
+        margin-bottom: 10px; /* Space between list items */
+    }
+
+/* Footer links */
+#mainfooter a {
+    color: var(--pakistan-green); /* Links use Pakistan green */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    #mainfooter a:hover {
+        color: var(--tangerine); /* Links change to tangerine on hover */
+    }
+
+/* Social media icons */
+#mainfooter .fab {
+    font-size: 1.5rem;
+    color: var(--pakistan-green); /* Social icons in Pakistan green */
+    transition: color 0.3s ease;
+    margin-right: 10px;
+}
+
+    #mainfooter .fab:hover {
+        color: var(--tangerine); /* Hover effect on social media icons */
+    }
+
+/* Copyright section */
+#mainfooter .copyright {
+    text-align: center;
+    font-size: 0.9rem;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-green); /* Divider between content and copyright */
+    margin-top: 20px;
+    color: var(--dark-green); /* Slightly darker green for subtle text */
+}
+
+/* Location select */
+#mainfooter .form-select {
+    background-color: var(--white);
+    border: 1px solid var(--border-green);
+    color: var(--pakistan-green);
+    border-radius: 10px;
+    padding: 5px;
+}
+
+    #mainfooter .form-select option {
+        color: var(--pakistan-green);
+    }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #mainfooter .row {
+        flex-direction: column;
+        text-align: center; /* Center columns on smaller screens */
+    }
+
+    #mainfooter .col-md-2 {
+        margin-bottom: 20px; /* Space between stacked columns */
+    }
+}
+
+.custom-width-row {
+    width: 90%; /* Adjust as needed */
+    margin: 0 auto; /* Center the row */
+}
+
+
+/* Create Listing Costum Style */
+.container-new-listing {
+    padding: 0px;
+}
+
+.form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    
+}
+
+.image-section, .form-section {
+    flex: 1 1 100%;
+    max-width: 100%; /*no overflow*/
+}
+
+.image-section {
+    max-width: 400px;
+}
+
+.form-section {
+    flex: 2 1 300px;
+}
+
+.image-preview {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+
+/* Form group */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control, .form-select {
+    width: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
+
+/* Responsive Flexbox buttons */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-submit {
+    background-color: #28a745; /* Choose BM pallet color */
+    color: white; /* Ensure text is white */
+    border: none;
+}
+
+    .btn-submit:hover {
+        background-color: #218838; /* Choose BM pallete green on hover */
+    }
+
+/* Close button positioning - deleted modal
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+}
+*/
+
+/* Flex-based responsive columns 
+@media screen and (min-width: 768px) {
+    .image-section, .form-section {
+        flex: 1 1 48%;
+    }
+
+    .modal-content {
+        padding-bottom: 20px;
+    }
+}
+*/
+
+.container-content {
+    width: 80%;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    position: relative;
+}
+
+
+/* Profile picture Costum Style */
+.profile-pic {
+    margin: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* listing picture Costum Style */
+.listing-picture {
+    margin: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 500px; /* this is max width size */
+    height: auto; /* img aspect ratio */
+    text-align: center;
+    position: relative;
+    margin-left: auto; /* Auto margin to center */
+    margin-right: auto;
+    
+}
+
+.listing-picture-preview {
+    max-width: 100%; /* responsive */
+    height: auto; /* aspect ratio */
+    object-fit: cover; /* noo distortion */
+    border-radius: 8px; /* adds rounded corners */
+    display: block; /* this removes any inline spacing from images */
+    border: 0.8px solid #D3D3D3;
+    padding: 10px;
+}
+
+/* Media queries responsive */
+@media (max-width: 768px) {
+    .listing-picture {
+        max-width: 100%; /* smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .listing-picture {
+        margin: 1%; /* smaller screens */
+    }
+}

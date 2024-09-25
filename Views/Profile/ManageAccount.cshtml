@@ -1,0 +1,164 @@
+@{
+    ViewData["Title"] = "Manage Account";
+}
+<h2>Manage Account</h2>
+<form id="manageAccountForm">
+       <div class="form-group">
+        <label for="profilePic">Profile Picture</label>
+        <input type="file" id="profilePic" class="form-control">
+        <img id="currentProfilePic" src="" alt="Profile Picture" style="width: 100px; height: 100px;" class="mt-2">
+    </div>
+  
+     <div class="form-group">
+        <label for="uname">UserName</label>
+        <input type="text" id="uname" class="form-control" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="fname">First Name</label>
+        <input type="text" id="fname" class="form-control" required>
+    </div>
+ <div class="form-group">
+        <label for="lname">Last Name</label>
+        <input type="text" id="lname" class="form-control" required>
+    </div>
+       <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="phone" id="phone" class="form-control" required>
+    </div>
+   
+       <div class="form-group">
+        <label for="address">Address</label>
+        <input type="address" id="address" class="form-control" required>
+    </div>
+     
+       <div class="form-group">
+        <label for="postalcode">PostalCode</label>
+        <input type="postalcode" id="postalcode" class="form-control" required>
+    </div>
+       
+       <div class="form-group">
+        <label for="city">City</label>
+        <input type="city" id="city" class="form-control" required>
+    </div>
+ <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" readonly>
+    </div>
+   
+    <button type="button" class="btn btn-primary mt-3" id="saveButton" onclick="saveUserData()">Save</button>
+    <button type="button" class="btn btn-secondary mt-3" id="cancelButton" onclick="cancelEdit()">Cancel</button>
+</form>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js';
+    import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-storage.js';
+
+     const firebaseConfig = {
+  apiKey: "AIzaSyB5hjms7ZPmTL4jEuG1P6BIOi6zfSpslgQ",
+  authDomain: "bartmartdb-4d9a9.firebaseapp.com",
+  databaseURL: "https://bartmartdb-4d9a9-default-rtdb.firebaseio.com",
+  projectId: "bartmartdb-4d9a9",
+  storageBucket: "bartmartdb-4d9a9.appspot.com",
+  messagingSenderId: "242866251858",
+  appId: "1:242866251858:web:00f525da3828eae2fd578b",
+  measurementId: "G-90SSEGT956"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    const storage = getStorage(app);
+    let currentUserId = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserId = user.uid;
+                        console.log(currentUserId);
+
+            loadUserData();
+        } else {
+            window.location.href = '/Home/Login';
+        }
+    });
+
+    window.loadUserData = function () {
+        const userRef = ref(database, `users/${currentUserId}`);
+        get(userRef).then(snapshot => {
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                console.log(userData.username);
+                document.getElementById('uname').value = userData.username;
+                document.getElementById('fname').value = userData.firstname;
+                document.getElementById('lname').value = userData.lastname;
+                document.getElementById('phone').value = userData.phonenumber;
+                document.getElementById('address').value = userData.address;
+                document.getElementById('city').value = userData.city;
+                document.getElementById('postalcode').value = userData.postalcode;
+                document.getElementById('email').value = userData.email;
+                //profile photo --
+                document.getElementById('currentProfilePic').src = userData.profilePic || '/images/default-profile.jpg';
+
+            }
+        });
+    };
+    // Attach the functions to the window object
+    window.saveUserData = async function () {
+        const userRef = ref(database, `users/${currentUserId}`);
+        const userSnapshot = await get(userRef);
+        if (userSnapshot.exists()) {
+            const currentData = userSnapshot.val();
+       
+
+            const newUsername = document.getElementById('uname').value || '';
+            //Profile photo
+                    const profilePicUrl = await getProfilePicURL();
+
+
+            const updatedData = {
+                
+                username: newUsername,
+                profilePic: profilePicUrl || currentData.profilePic || '', // Use new URL or existing one
+               // username: document.getElementById('username').value || '',
+                firstname: document.getElementById('fname').value || '',
+                lastname: document.getElementById('lname').value || '',
+                address: document.getElementById('address').value || '',
+                postalcode: document.getElementById('postalcode').value || '',
+                city: document.getElementById('city').value || '',
+                phonenumber: document.getElementById('phone').value || '',
+              //  firstname: document.getElementById('fname').value || '',
+                email: currentData.email, // Preserve the existing email
+              
+            };
+
+            await set(userRef, updatedData);
+            alert('User data updated successfully!');
+            window.location.href = '/Profile';
+        } else {
+            console.error('No user data found.');
+        }
+    }
+
+    window.cancelEdit = function () {
+        window.history.back(); // Go back to the previous page
+    }
+   window.getProfilePicURL = async function () {
+        const fileInput = document.getElementById('profilePic');
+        if (fileInput.files.length === 0) return null;
+        const file = fileInput.files[0];
+        const profilePicRef = storageRef(storage, `profile-pictures/${currentUserId}/${file.name}`);
+
+        try {
+            const snapshot = await uploadBytes(profilePicRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            return downloadURL;
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            alert('An error occurred while uploading the profile picture.');
+            return null;
+        }
+    }
+
+</script>

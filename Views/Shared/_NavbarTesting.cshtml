@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BartmartWeb</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BartmartWeb.styles.css" asp-append-version="true" />
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.0/mdb.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/NavbarFooterCSS.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+          crossorigin="anonymous">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+
+                <!-- Navbar First Row Logo-->
+                <div class="d-flex align-items-center">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="homepage">
+                        <img src="~/images/BartMart_Logo_small.png" alt="BartMart Logo" style="height: 50px;">
+                    </a>
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="homepage">BartMart</a>
+                </div>
+
+                <!-- Navbar First Row Search Engine -->
+                <div class="search-container d-flex flex-grow-1">
+                    <form class="d-flex" action="/Home/SearchEngine" method="get">
+                        <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+
+                <div class="d-flex justify-content-end">
+                    <!-- Navbar First Row Login with asp-action -->
+                    <a asp-area="" asp-controller="Home" asp-action="Login" class="btn-login" id="loginNav">
+                        <i class="fa-solid fa-user"></i> Login
+                    </a>
+
+                    <!-- Navbar First Row Register with asp-action -->
+                    <a asp-area="" asp-controller="Home" asp-action="Signup" class="btn-register" id="signupNav">
+                        Register
+                    </a>
+                </div>
+
+                <!-- Navbar First Row Logged-in Icons for favorites and notifications (hidden by default) -->
+                <div class="d-flex align-items-center" id="userDetails" style="display: none;">
+                    <i class="fas fa-heart me-3" id="favoritesIcon" style="cursor: pointer; display: none;"></i>
+                    <i class="fas fa-bell me-3" id="notificationsIcon" style="cursor: pointer; display: none;"></i>
+
+                    <!-- Display Username -->
+                    <span id="username" style="margin-right: 10px; display: none;"></span>
+
+                    <!-- User Picture -->
+                    <img alt="User Picture" id="userPicture" style="width: 40px; height: 40px; border-radius: 50%; display: none;">
+
+                    <!-- Logout Icon -->
+                    <i class="fas fa-sign-out-alt" id="logoutIcon" style="cursor: pointer; margin-left: 10px; display: none;"></i>
+                </div>
+
+            </div>             
+        </nav>
+
+        <!-- Guest Second Row -->
+        <div class="second-row" id="guestRow">
+            <a asp-area="" asp-controller="Home" asp-action="GreatTrades" class="btn-second-row">Great Trades</a>
+            <a asp-area="" asp-controller="Home" asp-action="NearMe" class="btn-second-row">Near Me</a>
+            <a asp-area="" asp-controller="Home" asp-action="Categories" class="btn-second-row">Categories</a>
+            <a asp-area="" asp-controller="Home" asp-action="BrowsePage" class="btn-second-row">Browse All Products</a>
+            <a asp-area="" asp-controller="Home" asp-action="ContactUs" class="btn-second-row">Contact Us</a>
+        </div>
+
+        <!-- Logged-in Second Row (hidden by default) -->
+        <div class="logged-in-row" id="loggedInRow" style="display: none;">
+            <a asp-area="" asp-controller="Home" asp-action="BrowsePage" id="BrowsePage" class="logged-in-btn">
+                Browse All Products
+            </a>
+
+            <a asp-area="" asp-controller="Profile" asp-action="NewListing" id="NewListing" class="logged-in-btn">
+                New Listing
+            </a>
+
+            <!-- My Listing with dropdown -->
+            <div class="logged-in-btn dropdown">
+                <a href="#" id="myListingBtn">My Listing</a>
+                <div class="sub-menu" id="listingSubMenu">
+                    <a asp-area="" asp-controller="Profile" asp-action="MyWishlist" id="MyWishlis" class="sub-menu-item">My Wishlist</a>
+                    <a asp-area="" asp-controller="Profile" asp-action="MyListings" id="MyListings" class="sub-menu-item">My Listings</a>
+                    <a asp-area="" asp-controller="Profile" asp-action="Comms" id="Comms" class="sub-menu-item">Comms</a>
+                </div>
+            </div>
+
+        <!-- My Profile -->
+
+        <a asp-area="" asp-controller="Profile" asp-action="Index" id="profile" class="logged-in-btn">
+            My Profile
+        </a>
+    </div>
+    </header>
+
+        
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+        <footer class="footer text-dark" id="mainfooter">
+            <div class="container-fluid" id="footercontainer">
+                <div class="row justify-content-between py-4">
+                    <!-- Column 1: Need Help? -->
+                    <div class="col-md-2">
+                        <h5 class="font-weight-bold">Need help?</h5>
+                        <button class="btn btn-primary mt-2" id="footerbtn">Contact us</button>
+                    </div>
+                    <!-- Column 2: Customer Support -->
+                    <div class="col-md-2">
+                        <h5 class="font-weight-bold">Customer Support</h5>
+                        <ul class="list-unstyled">
+                        <!--<li>Option 01</li>
+                            <li>Option 02</li>
+                            <li>Option 03</li> -->
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 3: Corporate Info -->
+                    <div class="col-md-2">
+                        <h5 class="font-weight-bold">Corporate Info</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Brands</a></li>
+                            <li><a href="#">Affiliates</a></li>
+                            <li><a href="#">Investors</a></li>
+                            <li><a href="#">Cookies</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 4: Crypto Money 
+                    <div class="col-md-2">
+                        <h5 class="font-weight-bold">Crypto Money</h5>
+                        <ul class="list-unstyled">
+                            <li>Find out more about Crypto money</li>
+                            <li>Crypto money as main currency</li>
+                        </ul>
+                    </div>-->
+                    <!-- Column 5: Location -->
+                    <div class="col-md-2">
+                        <h5 class="font-weight-bold">Location</h5>
+                        <select class="form-select mt-2">
+                            <option value="" disabled>Select a country</option>
+                            <option value="1">Canada 🇨🇦</option>
+                            <option value="2">USA 🇺🇸</option>
+                            <option value="3">United Kingdom 🇬🇧</option>
+                            <option value="4">Australia 🇦🇺</option>
+                            <option value="5">Germany 🇩🇪</option>
+                            <option value="6">France 🇫🇷</option>
+                        </select>
+                    <div class="container mt-5 d-flex justify-content-center">
+                        <!-- Center the icons in the container -->
+                        <a href="#" class="text-dark me-4" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-dark me-4" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-dark me-4" aria-label="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" class="text-dark me-4" aria-label="X (Twitter)">
+                            <i class="fab fa-x"></i>
+                        </a>
+                    </div>
+                    </div>
+                </div>
+                <div class="copyright">
+                    &copy; 2024 - BartmartWeb - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </div>
+            </div>
+
+        </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.0/mdb.umd.min.js"></script>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js"; // Add Firebase Database imports
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check auth state on page load
+            onAuthStateChanged(auth, async (user) => {
+                console.log('User state on load:', user); // Log the user object
+
+                const guestRow = document.getElementById('guestRow');
+                const loggedInRow = document.getElementById('loggedInRow');
+                const loginNav = document.getElementById('loginNav');
+                const signupNav = document.getElementById('signupNav');
+                const userDetails = document.getElementById('userDetails');
+                const username = document.getElementById('username');
+                const userPicture = document.getElementById('userPicture');
+                const logoutIcon = document.getElementById('logoutIcon');
+                const favoritesIcon = document.getElementById('favoritesIcon');
+                const notificationsIcon = document.getElementById('notificationsIcon');
+
+                if (user) {
+                    // User is signed in
+                    guestRow.style.display = 'none'; // Hide guest second row
+                    loggedInRow.style.display = 'flex'; // Show logged-in row
+                    loginNav.style.display = 'none'; // Hide login button
+                    signupNav.style.display = 'none'; // Hide register button
+                    userDetails.style.display = 'flex'; // Show user details
+
+                    // Show icons for favorites and notifications, if available
+                    if (favoritesIcon) favoritesIcon.style.display = 'block';
+                    if (notificationsIcon) notificationsIcon.style.display = 'block';
+
+                    // Get user profile data from Firebase Database
+                    const userId = user.uid; // Get user ID
+                    const userRef = ref(database, `users/${userId}`); // Reference to the user's data
+
+                    try {
+                        const snapshot = await get(userRef); // Fetch user data
+                        if (snapshot.exists()) {
+                            const userData = snapshot.val(); // Get the user's data from Firebase
+
+                            // Set username and user picture (with fallbacks)
+                            username.textContent = userData.username || ""; // Display username
+                            username.style.display = userData.username ? 'block' : 'none'; // Show or hide based on availability
+                            userPicture.src = userData.profilePic || "/images/default-profile.jpg"; // Fallback to default picture
+                            userPicture.style.display = 'block'; // Ensure picture is visible
+                        } else {
+                            console.log("No user data available");
+                        }
+                    } catch (error) {
+                        console.error("Error fetching user data:", error);
+                    }
+
+                    // Show the logout icon when user is signed in
+                    logoutIcon.style.display = 'block';
+
+                    // Ensure logout only has one event listener
+                    if (!logoutIcon.hasListener) {
+                        logoutIcon.addEventListener('click', () => {
+                            signOut(auth).then(() => {
+                                console.log('User signed out');
+                            }).catch((error) => {
+                                console.error('Sign out error:', error);
+                            });
+                        });
+                        logoutIcon.hasListener = true; // Custom flag to prevent duplicate listeners
+                    }
+
+                } else {
+                    // User is signed out
+                    guestRow.style.display = 'flex'; // Show guest second row
+                    loggedInRow.style.display = 'none'; // Hide logged-in row
+                    loginNav.style.display = 'block'; // Show login button
+                    signupNav.style.display = 'block'; // Show register button
+                    userDetails.style.display = 'none'; // Hide user details
+
+                    // Hide icons if available
+                    if (favoritesIcon) favoritesIcon.style.display = 'none';
+                    if (notificationsIcon) notificationsIcon.style.display = 'none';
+                    if (userPicture) userPicture.style.display = 'none';
+                    if (username) username.style.display = 'none';
+
+                    // Ensure logout icon is hidden when user is not signed in
+                    logoutIcon.style.display = 'none';
+                }
+
+                // Log the display state of both rows for debugging
+                console.log('Guest row display:', guestRow.style.display);
+                console.log('Logged in row display:', loggedInRow.style.display);
+            });
+
+            // Search form submission for Serach engine
+            // document.getElementById('searchForm').addEventListener('submit', function (e) {
+            //     e.preventDefault();
+            //     const query = document.getElementById('searchQuery').value.trim().toLowerCase();
+            //     onAuthStateChanged(auth, (user) => {
+            //         if (user) {
+            //             loadUserListings(user.uid, query);
+            //         }
+            //     });
+            // });
+
+
+
+            // Dropdown toggle for "My Listing"
+            document.getElementById('myListingBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('listingSubMenu').classList.toggle('show-menu');
+            });
+        });
+
+        // Get user details function (for further use if needed)
+        async function getUserDetails(userId) {
+            const userRef = ref(database, `users/${userId}`);
+            const userSnapshot = await get(userRef);
+            return userSnapshot.exists() ? userSnapshot.val() : {};
+        }
+    </script>
+
+</body>
+
+</html>

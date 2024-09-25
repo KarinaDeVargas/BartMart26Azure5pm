@@ -1,0 +1,281 @@
+@model BartmartWeb.Models.Listing
+@{
+   ViewData["Title"] = "Listing Details";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@ViewData["Title"]</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+<script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+<link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" />
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js";
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        window.onload = async function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const listingId = urlParams.get('id');
+
+            if (listingId) {
+                const listingRef = ref(database, `listings/${listingId}`);
+                const snapshot = await get(listingRef);
+
+                if (snapshot.exists()) {
+                    const listing = snapshot.val();
+                    document.getElementById("listingTitle").innerText = listing.title;
+                    document.getElementById("listingDescription").innerText = listing.description;
+                    document.getElementById("listingPrice").innerText = `$${listing.price}`;
+                    document.getElementById("listingCryptoValue").innerText = `₿${listing.cryptovalue}`;
+                    document.getElementById("listingCategory").innerText = listing.category;
+                    document.getElementById("listingCondition").innerText = listing.condition;
+                    document.getElementById("listingStatus").innerText = listing.status;
+                    document.getElementById("listingLocation").innerText = listing.location;
+                    document.getElementById("listingImage").src = listing.image || 'https://via.placeholder.com/300';
+                    document.getElementById("listingExchangable").innerText = listing.isChangeable ? "Yes" : "No";
+                    document.getElementById("listingCreationDate").innerText = formatListingCreationDate(listing.timestamp);
+
+                    // Fetch coordinates of the listing's location and load the map
+                    const coordinates = await getCoordinates(listing.location);
+
+                    // Fetch the Azure Maps key from the controller and load the map
+                    const azureMapsKey = await fetchAzureMapsKey();
+                    loadMap(coordinates, azureMapsKey);
+                } else {
+                    console.error("No listing found");
+                }
+            }
+
+            // Event listener for the Calculate Distance button
+            document.getElementById('calculateDistance').addEventListener('click', async () => {
+                const buyerPostalCode = document.getElementById('buyerPostalCode').value;
+                const itemPostalCode = document.getElementById('listingLocation').innerText;
+
+                if (!buyerPostalCode) {
+                    alert('Please enter your postal code.');
+                    return;
+                }
+
+                try {
+                    const [buyerCoords, itemCoords] = await Promise.all([
+                        getCoordinates(buyerPostalCode),
+                        getCoordinates(itemPostalCode),
+                    ]);
+
+                    const distance = calculateDistance(buyerCoords, itemCoords);
+                    document.getElementById('distanceToItem').innerText = `${distance.toFixed(2)} km`;
+
+                    // Draw line on the map between the buyer and item locations
+                    drawLineOnMap(buyerCoords, itemCoords);
+
+                } catch (error) {
+                    console.error('Error calculating distance:', error);
+                    alert('An error occurred while calculating the distance. Please check the postal codes and try again.');
+                }
+            });
+        };
+
+        // Function to get coordinates from postal code
+        async function getCoordinates(postalCode) {
+            try {
+                const response = await fetch(`/AzureMaps/Geocode?postalCode=${encodeURIComponent(postalCode)}`);
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    return data.results[0].position;
+                } else {
+                    throw new Error('Unable to geocode postal code.');
+                }
+            } catch (error) {
+                console.error('Error fetching coordinates:', error);
+                throw error;
+            }
+        }
+
+        // Function to fetch Azure Maps key from server-side controller
+        async function fetchAzureMapsKey() {
+            try {
+                const response = await fetch('/AzureMaps/GetMapKey');
+                if (!response.ok) {
+                    throw new Error('Failed to retrieve Azure Maps key');
+                }
+                const data = await response.json();
+                return data.key; // Assuming the response is { "key": "your_azure_maps_key" }
+            } catch (error) {
+                console.error('Error fetching Azure Maps key:', error);
+                throw error;
+            }
+        }
+
+        // Function to calculate distance between two coordinates
+        function calculateDistance(coord1, coord2) {
+            const toRadians = (degrees) => degrees * (Math.PI / 180);
+            const R = 6371; // Radius of Earth in kilometers
+
+            const lat1 = coord1.lat;
+            const lon1 = coord1.lon;
+            const lat2 = coord2.lat;
+            const lon2 = coord2.lon;
+
+            const dLat = toRadians(lat2 - lat1);
+            const dLon = toRadians(lon2 - lon1);
+
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // Distance in kilometers
+        }
+
+        // Function to format the listing creation date
+        function formatListingCreationDate(date) {
+            const parsedDate = new Date(date);
+            if (isNaN(parsedDate.getTime())) {
+                return "Invalid Date";
+            }
+            const year = parsedDate.getFullYear();
+            const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(parsedDate.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`; // Format as YYYY-MM-DD
+        }
+
+        // Function to load Azure Maps and display the location
+        function loadMap(coordinates, azureMapsKey) {
+            const map = new atlas.Map('mapContainer', {
+                center: [coordinates.lon, coordinates.lat],
+                zoom: 10,
+                view: 'Auto',
+                authOptions: {
+                    authType: 'subscriptionKey',
+                    subscriptionKey: azureMapsKey
+                }
+            });
+
+            const marker = new atlas.HtmlMarker({
+                position: [coordinates.lon, coordinates.lat],
+                color: 'red'
+            });
+
+            map.markers.add(marker);
+
+            // Store map globally so we can access it in other functions
+            window.mapInstance = map;
+        }
+
+        // Function to draw a line between buyer and item locations
+        function drawLineOnMap(buyerCoords, itemCoords) {
+            const map = window.mapInstance;
+
+            if (!map) {
+                console.error("Map instance is not ready.");
+                return;
+            }
+
+            map.events.add('ready', () => {
+                const lineCoordinates = [
+                    [buyerCoords.lon, buyerCoords.lat],
+                    [itemCoords.lon, itemCoords.lat]
+                ];
+
+                const line = new atlas.data.LineString(lineCoordinates);
+
+                const dataSource = new atlas.source.DataSource();
+                map.sources.add(dataSource);
+                dataSource.add(new atlas.data.Feature(line));
+
+                const lineLayer = new atlas.layer.LineLayer(dataSource, null, {
+                    strokeColor: 'blue',
+                    strokeWidth: 2
+                });
+
+                map.layers.add(lineLayer);
+            });
+        }
+    </script>
+</head>
+
+
+
+
+    <body class="bg-light">
+        <div id="modalBackground" class="container-new-listing">
+            <div class="container-content">
+            <h2 class="text-center mb-4">Listing Details</h2>
+        
+            <!-- Image Section -->
+            <div class="listing-picture">
+                <img id="listingImage" class="listing-picture-preview" alt="Listing Image">
+            </div>
+            <!-- Details Section -->
+            <div class="details-section">
+                <div class="form-group">
+                    <label class="form-label"><strong>Title:</strong></label>
+                    <p id="listingTitle"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Description:</strong></label>
+                    <p id="listingDescription"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Price:</strong></label>
+                    <p id="listingPrice"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Crypto Value (Optional):</strong></label>
+                    <p id="listingCryptoValue">₿</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Category:</strong></label>
+                    <p id="listingCategory"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Condition:</strong></label>
+                    <p id="listingCondition"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Listing Created:</strong></label>
+                    <p id="listingCreationDate"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Location:</strong></label>
+                    <p id="listingLocation"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Exchangeable:</strong></label>
+                    <p id="listingExchangable"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>Status:</strong></label>
+                    <p id="listingStatus"></p>
+                </div>
+
+                <!-- Distance calculator -->
+                <div class="form-group">
+                    <label for="buyerPostalCode" class="form-label">Enter Your Postal Code:</label>
+                    <input type="text" class="form-control" id="buyerPostalCode" placeholder="e.g., M5V 3L9" style="margin: 0;">
+                    <button id="calculateDistance" class="btn btn-primary mt-2">Calculate Distance</button>
+                </div>
+
+                <!-- Display the calculated distance -->
+                <div class="form-group">
+                    <label class="form-label">Distance to Item:</label>
+                    <p id="distanceToItem"></p>
+                </div>
+                <div id="mapContainer" style="width: 100%; height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+</body>
+</html>
+

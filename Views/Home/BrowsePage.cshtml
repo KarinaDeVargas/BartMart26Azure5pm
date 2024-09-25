@@ -1,0 +1,173 @@
+<script>
+function sendMessage(uid){
+message = window.prompt('Please enter message:','Hi, I am interested.');
+alert(`\"${message}\" sent to ${uid}`);
+}
+</script>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
+    import { getDatabase, ref as dbRef, onValue } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js';
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    const browselistings = document.getElementById("browselistings");
+    const listingRootRef = dbRef(database, 'listings/');
+
+    function loadBrowseListings() {
+        onValue(listingRootRef, (snapshot) => {
+
+            const listings = snapshot.val();
+
+            if (listings) {
+
+                var cell = "";
+
+                const maxLength = 50;
+                var count = 0;
+
+                Object.keys(listings).forEach(key => {
+                    count++;
+                    const list = listings[key];
+                    const trimDes = list.description.length > maxLength ? list.description.substring(0, maxLength) + " ... " : list.description;
+
+                    cell = cell + `<div class="col-3"><a href="/Home/ListingDetails?id=${key}" style="text-decoration: none; color: black;">
+<img src="${list.image}" width="250px" height="154px"><p><br><b>${list.title}</b></p><p>${trimDes}</p><p>$${list.price}&nbsp;</p></a>`
+                                + `<p><button type="button" class="btn btn-primary btn-rounded" data-mdb-ripple-init onclick='sendMessage("${list.userId}");'>Contact Seller</button></p></div>`;
+                    if(count % 4 == 0) cell = cell + `<div class="w-100"></div><br>`;
+                });
+
+                browselistings.innerHTML = cell;
+
+            } else {
+
+                alert("No listing found yet!");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadBrowseListings();
+    });
+
+</script>
+
+<br>
+<h2><b>Categories</b></h2>
+<br>
+<div class="row text-center">
+    <div class="col-2 align-self-center">
+        <p style="font-size:6vw;color:Grey;">	&#9742;</p>
+        <p><b>Electronics</b></p>
+    </div>
+    <div class="col-2 align-self-center">
+        <p style="font-size:6vw;color:green;"><i class="fa-solid fa-user-tie"></i></p>
+        <p><b>Fashion</b></p>
+    </div>
+    <div class="col-2 align-self-center">
+        <p style="font-size:6vw;color:brown;"><i class="fa-solid fa-briefcase-medical"></i></p>
+        <p><b>Health & Beauty</b></p>
+    </div>
+    <div class="col-2 align-self-center">
+        <p style="font-size:6vw;color:blue;"><i class="fa-solid fa-person-running"></i></p>
+        <p><b>Sports & Outdoors</b></p>
+    </div>
+    <div class="col-2 align-self-center">
+        <p style="font-size:6vw;color:Black;"><i class="fa-solid fa-gamepad"></i></p>
+        <p><b>Toys & Games</b></p>
+    </div>
+    <div class="col-2 align-self-center">
+        <p style="font-size:6vw;color:purple;"><i class="fa-solid fa-car"></i></p>
+        <p><b>Automotive</b></p>
+    </div>
+</div>
+<hr>
+<br>
+<div style="display:flex;gap:16px;">
+<div class="dropdown">
+  <button
+    class="btn btn-warning dropdown-toggle"
+    type="button"
+    id="dropdownMenuButton"
+    data-mdb-dropdown-init
+    data-mdb-ripple-init
+    aria-expanded="false"
+  >
+    Sort by
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <li><a class="dropdown-item" href="#">Criteria A</a></li>
+    <li><a class="dropdown-item" href="#">Criteria B</a></li>
+    <li><a class="dropdown-item" href="#">Criteria C</a></li>
+  </ul>
+</div>
+    <button type="button" class="btn btn-primary">New Arrivals</button>
+    <button type="button" class="btn btn-secondary">Sales</button>
+<div class="dropdown">
+  <button
+    class="btn btn-danger dropdown-toggle"
+    type="button"
+    id="dropdownMenuButton"
+    data-mdb-dropdown-init
+    data-mdb-ripple-init
+    aria-expanded="false"
+  >
+    Color
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <li><a class="dropdown-item" href="#">Red</a></li>
+    <li><a class="dropdown-item" href="#">Green</a></li>
+    <li><a class="dropdown-item" href="#">Blue</a></li>
+    <li><a class="dropdown-item" href="#">Black</a></li>
+    <li><a class="dropdown-item" href="#">White</a></li>
+    <li><a class="dropdown-item" href="#">Yellow</a></li>
+    <li><a class="dropdown-item" href="#">Orange</a></li>
+    <li><a class="dropdown-item" href="#">Brown</a></li>
+    <li><a class="dropdown-item" href="#">Purple</a></li>
+  </ul>
+</div>
+<div class="dropdown">
+  <button
+    class="btn btn-info dropdown-toggle"
+    type="button"
+    id="dropdownMenuButton"
+    data-mdb-dropdown-init
+    data-mdb-ripple-init
+    aria-expanded="false"
+  >
+    Size
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <li><a class="dropdown-item" href="#">Small</a></li>
+    <li><a class="dropdown-item" href="#">Medium</a></li>
+    <li><a class="dropdown-item" href="#">Large</a></li>
+  </ul>
+</div>
+<div class="dropdown">
+  <button
+    class="btn btn-success dropdown-toggle"
+    type="button"
+    id="dropdownMenuButton"
+    data-mdb-dropdown-init
+    data-mdb-ripple-init
+    aria-expanded="false"
+  >
+    Brand
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <li><a class="dropdown-item" href="#">Brand A</a></li>
+    <li><a class="dropdown-item" href="#">Brand B</a></li>
+    <li><a class="dropdown-item" href="#">Brand C</a></li>
+  </ul>
+</div>
+    <button type="button" class="btn btn-secondary">All filters &nbsp; <i class="fa-solid fa-sliders"></i></button>
+</div>
+<br>
+<div class="container">
+    <div class="row" id="browselistings">
+
+    </div>
+</div>
