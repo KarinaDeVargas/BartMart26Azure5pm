@@ -33,11 +33,25 @@ alert(`\"${message}\" sent to ${uid}`);
                     count++;
                     const list = listings[key];
                     const trimDes = list.description.length > maxLength ? list.description.substring(0, maxLength) + " ... " : list.description;
+                    cell = cell + `
+    <div class="col-md-3">  <!-- Bootstrap's grid system handles row breaking -->
+        <div class="listing-card">
+            <a href="/Home/ListingDetails?id=${key}" style="text-decoration: none; color: black">
+                <div class="image-container">
+                    <img src="${list.image}" class="img-fluid listing-image">
+                </div>
+                <div class="text-container">
+                    <p class="listing-title">${list.title}</p>
+                    <p>$${list.price}&nbsp;</p>
+                </div>
+            </a>
+            <button type="button" class="btn btn-primary btn-rounded small-button" data-mdb-ripple-init onclick='sendMessage("${list.userId}");'>Contact Seller</button>
+        </div>
+    </div>`;
 
-                    cell = cell + `<div class="col-3"><a href="/Home/ListingDetails?id=${key}" style="text-decoration: none; color: black;">
-<img src="${list.image}" width="250px" height="154px"><p><br><b>${list.title}</b></p><p>${trimDes}</p><p>$${list.price}&nbsp;</p></a>`
-                                + `<p><button type="button" class="btn btn-primary btn-rounded" data-mdb-ripple-init onclick='sendMessage("${list.userId}");'>Contact Seller</button></p></div>`;
-                    if(count % 4 == 0) cell = cell + `<div class="w-100"></div><br>`;
+
+
+                    
                 });
 
                 browselistings.innerHTML = cell;

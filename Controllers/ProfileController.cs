@@ -27,6 +27,10 @@ namespace BartmartWeb.Controllers
    {
        return View();
    }
+        public IActionResult MyWishlist()
+        {
+            return View("~/Views/Profile/MyWishlist.cshtml");
+        }
 
         public IActionResult NewListing()
         {
@@ -34,4 +38,5 @@ namespace BartmartWeb.Controllers
         }
 
     }
+
 }

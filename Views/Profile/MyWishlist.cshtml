@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "My Wishlist";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .listing-card img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    loadWishlist(user.uid);
+                } else {
+                    window.location.href = '/Home/Login';
+                }
+            });
+        });
+
+        // Function to load user's wishlist items
+        // Function to load user's wishlist items
+        function loadWishlist(userId) {
+            const wishlistRef = ref(database, `users/${userId}/wishlist/`);
+            onValue(wishlistRef, async (snapshot) => {
+                const wishlist = snapshot.val();
+                const listingsContainer = document.getElementById("listingsContainer");
+                listingsContainer.innerHTML = ""; // Clear existing items
+
+                if (!wishlist) {
+                    listingsContainer.innerHTML = "<p>You have no items in your wishlist.</p>";
+                    return;
+                }
+
+                for (const listingId in wishlist) {
+                    // Fetch the actual listing details from the listings node
+                    const listingRef = ref(database, `listings/${listingId}`);
+                    const listingSnapshot = await get(listingRef);
+
+                    if (listingSnapshot.exists()) {
+                        const listing = listingSnapshot.val();
+                        listingsContainer.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="listing-card" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                                <a href="/Home/listingdetails?id=${listingId}" style="text-decoration: none; color: inherit;">
+                                    <img src="${listing.image}" alt="${listing.title}" class="img-fluid" />
+                                    <h4>${listing.title}</h4>
+                                    <p>${listing.description}</p>
+                                    <p>Price: $${listing.price}</p>
+                                </a>
+                                <button class="btn btn-danger" onclick="removeFromWishlist('${listingId}')">Remove from Wishlist</button>
+                            </div>
+                        </div>
+                        `;
+                    }
+                }
+            });
+        }
+
+
+        // Function to remove an item from the wishlist
+        window.removeFromWishlist = function(listingId) {
+            const userId = auth.currentUser.uid;
+            const wishlistRef = ref(database, `wishlist/${userId}/${listingId}`);
+            remove(wishlistRef).then(() => {
+                alert("Removed from wishlist!");
+                location.reload(); // Reload the page to update the wishlist
+            }).catch((error) => {
+                console.error("Error removing item from wishlist:", error);
+            });
+        };
+    </script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>My Wishlist</h2>
+        <div id="listingsContainer" class="row">
+            <!-- Wishlisted items will be dynamically inserted here -->
+        </div>
+    </div>
+</body>
+</html>

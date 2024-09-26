@@ -427,7 +427,7 @@
 
 /* Create Listing Costum Style */
 .container-new-listing {
-    padding: 0px;
+    padding: 50px;
 }
 
 .form-container {
@@ -522,50 +522,10 @@
 }
 
 
-/* Profile picture Costum Style */
+/* Create Listing Costum Style */
 .profile-pic {
     margin: 2%;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-
-/* listing picture Costum Style */
-.listing-picture {
-    margin: 2%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 500px; /* this is max width size */
-    height: auto; /* img aspect ratio */
-    text-align: center;
-    position: relative;
-    margin-left: auto; /* Auto margin to center */
-    margin-right: auto;
-    
-}
-
-.listing-picture-preview {
-    max-width: 100%; /* responsive */
-    height: auto; /* aspect ratio */
-    object-fit: cover; /* noo distortion */
-    border-radius: 8px; /* adds rounded corners */
-    display: block; /* this removes any inline spacing from images */
-    border: 0.8px solid #D3D3D3;
-    padding: 10px;
-}
-
-/* Media queries responsive */
-@media (max-width: 768px) {
-    .listing-picture {
-        max-width: 100%; /* smaller screens */
-    }
-}
-
-@media (max-width: 480px) {
-    .listing-picture {
-        margin: 1%; /* smaller screens */
-    }
 }
